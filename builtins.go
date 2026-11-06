@@ -213,7 +213,7 @@ func (ctx *execContext) callBuiltin(name string, args []string) (result string, 
 		}
 		return "0", true
 	case "EOF":
-		if arg0 == "" {
+		if arg0 == "" || arg0 == "0" {
 			return ctx.getVar("EOF$"), true
 		}
 		if bc, exists := vm.chans.Load(arg0); exists {
