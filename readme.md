@@ -330,5 +330,5 @@ $$\text{Physical Address} = (\text{Segment} \times 16 + \text{Offset}) \pmod{2^{
 | `INKEY$` | Console | Non-blocking, non-echoing raw keystroke read. |
 | `CSRLIN` / `POS(0)` | Console | Current 1-based cursor row (`CSRLIN`) and column (`POS`). |
 | `TAB(col)` | Console | Spaces needed to advance cursor to 1-based column `col`. |
-| `PEEK(offset)` | Memory | Reads byte at $(\text{DEF SEG} \times 16 + \text{offset}) \ \& \ \text{0xFFFFF}$. |
+| `PEEK(offset)` | Memory | Reads byte at $(\text{DEF SEG} \times 16 + \text{offset}) \bmod 2^{20}$. |
 | `TIMER` / `TIMER()` | System | Elapsed seconds (with millisecond precision) since VM startup. |
