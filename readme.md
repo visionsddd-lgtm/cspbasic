@@ -95,11 +95,11 @@ Expressions are evaluated by a type-aware recursive-descent parser with the foll
 
 1. **Parentheses & Primary Access**: `( expr )`, `ARR(i)`, `REC@.FIELD`, `FN name(...)`, `FN APPLY(...)`, built-in functions.
 2. **Unary Operators**: `-x` (negation), `+x` (unary plus), `#n` (channel identifier prefix).
-3. **Exponentiation**: `x ^ y` (right-associative, $\text{math.Pow}(x, y)$).
+3. **Exponentiation**: `x ^ y` (right-associative, `math.Pow(x, y)`).
 4. **Multiplicative**:
    * `x * y` (multiplication)
-   * `x / y` (floating-point division; division by $0$ returns `0`)
-   * `x \ y` (integer division $\lfloor x / y \rfloor$)
+   * `x / y` (floating-point division; division by `0` returns `0`)
+   * `x \ y` (integer division ⌊x / y⌋)
    * `x MOD y` or `x % y` (integer remainder)
 5. **Additive & Concatenation**:
    * `x + y`: Performs numeric addition if both operands are numeric; performs string concatenation if either operand has a `$` or `@` sigil or is a string literal.
@@ -107,13 +107,13 @@ Expressions are evaluated by a type-aware recursive-descent parser with the foll
 6. **Relational Comparisons**: `=`, `<>`, `<`, `>`, `<=`, `>=`.
    * Compares numerically if both operands are non-string; compares lexicographically if either operand is a string.
    * Returns **`-1`** for **TRUE** and **`0`** for **FALSE** (authentic 1984 16-bit two's-complement boolean representation).
-7. **Logical / Bitwise `NOT`**: `NOT x` (returns `0` if $x \ne 0$, or `-1` if $x = 0$).
-8. **Logical / Bitwise `AND`**: 16-bit bitwise conjunction ($\text{int16}(x) \ \& \ \text{int16}(y)$).
+7. **Logical / Bitwise `NOT`**: `NOT x` (returns `0` if x ≠ 0, or `-1` if x = 0).
+8. **Logical / Bitwise `AND`**: 16-bit bitwise conjunction (`int16(x) & int16(y)`).
 9. **Logical / Bitwise `OR`, `XOR`, `EQV`, `IMP`**:
-   * `OR`: $\text{int16}(x) \mid \text{int16}(y)$
-   * `XOR`: $\text{int16}(x) \oplus \text{int16}(y)$
-   * `EQV`: $\sim(\text{int16}(x) \oplus \text{int16}(y))$
-   * `IMP`: $(\sim\text{int16}(x)) \mid \text{int16}(y)$
+   * `OR`: `int16(x) | int16(y)`
+   * `XOR`: `int16(x) ⊕ int16(y)`
+   * `EQV`: `~(int16(x) ⊕ int16(y))`
+   * `IMP`: `(~int16(x)) | int16(y)`
 
 ---
 
@@ -127,7 +127,7 @@ Expressions are evaluated by a type-aware recursive-descent parser with the foll
   * `GOSUB` pushes the next statement's continuation `pc` onto the current frame's call stack.
   * `RETURN` pops the most recent `GOSUB` continuation. If the `GOSUB` stack is empty (such as at the end of a `SPAWN`ed worker or a multi-line `DEF FN`), `RETURN [expr]` cleanly terminates the fiber or returns `expr` from the function.
 * **`ON expr GOTO line1, line2, ...`** / **`ON expr GOSUB line1, line2, ...`**:
-  * Evaluates `expr` as a 1-based integer index ($1, 2, \dots, k$) and jumps or calls the corresponding target line. Out-of-range values fall through to the next statement.
+  * Evaluates `expr` as a 1-based integer index (1, 2, …, k) and jumps or calls the corresponding target line. Out-of-range values fall through to the next statement.
 
 ### 5.2 Loops (`FOR ... NEXT` and `WHILE ... WEND`)
 * **`FOR var = start TO end [STEP delta] ... NEXT var`**:
@@ -159,7 +159,7 @@ Expressions are evaluated by a type-aware recursive-descent parser with the foll
 ### 6.1 N-Dimensional Arrays (`DIM`, `REDIM`, `ERASE`, `UBOUND`)
 Every array in CSP-BASIC is backed by a lock-free `ArrayMap` registry (`sync.Map`) and protected by its own per-array `sync.RWMutex`. Multiple goroutines can read and write to shared arrays concurrently without data races.
 
-* **`DIM arr(d1 [, d2, ...])`**: Allocates an N-dimensional array with indices $0 \dots d_k$ inclusive per dimension. If an array is referenced without a prior `DIM`, it is atomically auto-dimensioned to $0 \dots 10$ per axis.
+* **`DIM arr(d1 [, d2, ...])`**: Allocates an N-dimensional array with indices 0 … dₖ inclusive per dimension. If an array is referenced without a prior `DIM`, it is atomically auto-dimensioned to 0 … 10 per axis.
 * **`REDIM arr(d1 [, d2, ...])`**: Reallocates and clears an existing array.
 * **`ERASE arr1, arr2, ...`**: Deletes the specified arrays from memory.
 * **`UBOUND(arr [, dim])`**: Returns the upper bound of dimension `dim` (1-based; defaults to `1`).
@@ -285,17 +285,20 @@ Disk files are backed by the exact same `BasicChan` descriptor engine as in-memo
 ## 10. 1984 CRT Console & 1 MiB Real-Mode Memory Emulation
 
 ### 10.1 80x25 Text-Mode CRT & Keyboard (`CLS`, `LOCATE`, `COLOR`, `INKEY$`)
-* **`CLS`**: Clears the terminal and resets the cursor to $(1, 1)$.
+* **`CLS`**: Clears the terminal and resets the cursor to (1, 1).
 * **`LOCATE [row][, col]`**: Moves the cursor to 1-based `row` and `col`.
-* **`COLOR fg[, bg]`**: Sets the 1984 CGA text color (`fg` $0 \dots 15$, `bg` $0 \dots 7$).
+* **`COLOR fg[, bg]`**: Sets the 1984 CGA text color (`fg` 0–15, `bg` 0–7).
 * **`BEEP`**: Emits the console bell (`\a`).
 * **`INKEY$`**: Polls the hardware keyboard buffer without blocking or echoing. Returns `""` if no key is pressed, a 1-byte string for standard ASCII keys, or a 2-byte `CHR$(0) + CHR$(scanCode)` string for extended arrow/function keys.
 
 ### 10.2 1 MiB Segmented Memory (`DEF SEG`, `PEEK`, `POKE`)
-CSP-BASIC emulates a thread-safe $1\text{ MiB}$ ($2^{20} = 1{,}048{,}576\text{ bytes}$) real-mode address space shared across all fibers:
-$$\text{Physical Address} = (\text{Segment} \times 16 + \text{Offset}) \pmod{2^{20}}$$
+CSP-BASIC emulates a thread-safe 1 MiB (2²⁰ = 1,048,576 bytes) real-mode address space shared across all fibers:
+
+```
+Physical Address = (Segment × 16 + Offset) mod 2²⁰
+```
 * **`DEF SEG [= segmentExpr]`**: Sets the current 16-bit segment register (bare `DEF SEG` resets to `0`).
-* **`POKE offsetExpr, byteExpr`**: Writes an 8-bit byte ($0 \dots 255$) to `offsetExpr`.
+* **`POKE offsetExpr, byteExpr`**: Writes an 8-bit byte (0–255) to `offsetExpr`.
 * **`PEEK(offsetExpr)`**: Reads the 8-bit byte at `offsetExpr`.
 
 ---
