@@ -50,9 +50,9 @@ Identifiers are case-insensitive (`count%` and `COUNT%` refer to the same variab
 | Sigil | Type | Default Value | Coercion & Semantics |
 | :--- | :--- | :--- | :--- |
 | **`$`** | String | `""` | Strictly typed as string; `+` always performs concatenation, even if contents are digits (`"123"`). |
-| **`%`** | Integer | `"0"` | Truncates assigned numeric values to a 64-bit signed integer ($\text{int64}$). |
+| **`%`** | Integer | `"0"` | Truncates assigned numeric values to a 64-bit signed integer (`int64`). |
 | **`@`** | Record | `""` | Composite structured record; packs and unpacks `.FIELD` members automatically. |
-| **`!` / `#` / *(none)*** | Floating-Point | `"0"` | Double-precision floating-point ($\text{float64}$) formatted without trailing zeros. |
+| **`!` / `#` / *(none)*** | Floating-Point | `"0"` | Double-precision floating-point (`float64`) formatted without trailing zeros. |
 
 ---
 
@@ -316,13 +316,13 @@ $$\text{Physical Address} = (\text{Segment} \times 16 + \text{Offset}) \pmod{2^{
 | `STRING$(n, ch$OrCode)` | String | Repeats character `ch$` (or ASCII code) `n` times. |
 | `HEX$(n)` / `OCT$(n)` | String | Formats integer `n` in uppercase hexadecimal or octal. |
 | `ABS(n)` / `SGN(n)` | Math | Absolute value of `n`; sign of `n` (`-1`, `0`, or `1`). |
-| `INT(n)` / `FIX(n)` | Math | Floor ($\lfloor n \rfloor$) vs. truncation toward zero. |
-| `SQR(n)` | Math | Square root $\sqrt{\max(0, n)}$. |
+| `INT(n)` / `FIX(n)` | Math | Floor (⌊n⌋) vs. truncation toward zero. |
+| `SQR(n)` | Math | Square root √max(0, n). |
 | `SIN(n)`, `COS(n)`, `TAN(n)`, `ATN(n)` | Math | Trigonometric functions (in radians). |
-| `LOG(n)` / `EXP(n)` | Math | Natural logarithm $\ln(n)$ and exponential $e^n$. |
+| `LOG(n)` / `EXP(n)` | Math | Natural logarithm ln(n) and exponential eⁿ. |
 | `MIN(a, b)` / `MAX(a, b)` | Math | Minimum or maximum of two numbers. |
-| `RND` / `RND()` | Math | Pseudo-random float in $[0.0, 1.0)$. |
-| `RANDINT(min, max)` | Math | Pseudo-random integer in $[min, max]$ inclusive. |
+| `RND` / `RND()` | Math | Pseudo-random float in [0.0, 1.0). |
+| `RANDINT(min, max)` | Math | Pseudo-random integer in [`min`, `max`] inclusive. |
 | `UBOUND(arr [, dim])` | Array | Upper bound of array `arr` along 1-based dimension `dim`. |
 | `DREM` / `DREM()` | Data | Count of unread items remaining in the `DATA` pool. |
 | `QLEN(#n)` / `LOF(#n)` | CSP / I/O | Number of queued messages currently waiting in channel `#n`. |
@@ -330,5 +330,5 @@ $$\text{Physical Address} = (\text{Segment} \times 16 + \text{Offset}) \pmod{2^{
 | `INKEY$` | Console | Non-blocking, non-echoing raw keystroke read. |
 | `CSRLIN` / `POS(0)` | Console | Current 1-based cursor row (`CSRLIN`) and column (`POS`). |
 | `TAB(col)` | Console | Spaces needed to advance cursor to 1-based column `col`. |
-| `PEEK(offset)` | Memory | Reads byte at $(\text{DEF SEG} \times 16 + \text{offset}) \bmod 2^{20}$. |
+| `PEEK(offset)` | Memory | Reads byte at `(DEF SEG × 16 + offset) AND &HFFFFF`. |
 | `TIMER` / `TIMER()` | System | Elapsed seconds (with millisecond precision) since VM startup. |
